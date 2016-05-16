@@ -1,0 +1,17 @@
+*.suo
+*.opensdf
+*.sdf
+*.user
+
+[Bb]in/
+[Dd]ebugTest/
+[Dd]ebugXNGen/
+[Ll]ogs/
+[Rr]elease/
+[Rr]eleaseNoConsole/
+[Ss]ubmission/
+[Oo]utput/
+[Oo]bj/
+[Bb]ld/
+[Pp]ackages/
+.vs/
