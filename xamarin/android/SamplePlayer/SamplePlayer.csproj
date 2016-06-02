@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C4988FC6-F85E-4975-BDCF-2BC8AA272F6D}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SamplePlayer</RootNamespace>
+    <AssemblyName>SamplePlayer</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkMode>None</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Mono.Android" />
+    <Reference Include="mscorlib" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UplynkBindings, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Bindings\UplynkBindings.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MainActivity.cs" />
+    <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="GettingStarted.Xamarin" />
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libgnustl_shared.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libUplynkCore.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libUplynkNeonExt.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libUplynkPlayer.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libuplynk_2_3.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libuplynk_4_0.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libuplynk_4_1.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libuplynk_4_2.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libuplynk_4_3.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libuplynk_4_4.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libUplynk_5_0.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libUplynk_6_0.so">
+      <Abi>armeabi-v7a</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libgnustl_shared.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libUplynkCore.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libUplynkNeonExt.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libUplynkPlayer.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libuplynk_2_3.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libuplynk_4_0.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libuplynk_4_1.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libuplynk_4_2.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libuplynk_4_3.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libuplynk_4_4.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libUplynk_5_0.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\armeabi\libUplynk_6_0.so">
+      <Abi>armeabi</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\x86\libgnustl_shared.so">
+      <Abi>x86</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\x86\libUplynkCore.so">
+      <Abi>x86</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\x86\libUplynkPlayer.so">
+      <Abi>x86</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\x86\libuplynk_4_2.so">
+      <Abi>x86</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\x86\libuplynk_4_4.so">
+      <Abi>x86</Abi>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="NativeLibs\x86\libUplynk_5_0.so">
+      <Abi>x86</Abi>
+    </AndroidNativeLibrary>
+    <None Include="Resources\AboutResources.txt" />
+    <None Include="Assets\AboutAssets.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\Main.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\Strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AndroidManifest.xml" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+     Other similar extension points exist, see Microsoft.Common.targets.
+		<Target Name="BeforeBuild">
+		</Target>
+		<Target Name="AfterBuild">
+		</Target>
+ -->
+</Project>
