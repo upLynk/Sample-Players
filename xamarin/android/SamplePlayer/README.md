@@ -6,7 +6,7 @@ Related topics
 --------------
 
 
-[Visual Studio with Xamarin]([https://www.visualstudio.com/en-us/features/xamarin-vs.aspx](https://www.visualstudio.com/en-us/features/xamarin-vs.aspx))
+[Visual Studio with Xamarin](https://www.visualstudio.com/en-us/features/xamarin-vs.aspx)
 
 Build the sample
 ----------------
