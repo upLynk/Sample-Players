@@ -58,7 +58,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="GettingStarted.Xamarin" />
     <AndroidNativeLibrary Include="NativeLibs\armeabi-v7a\libgnustl_shared.so">
       <Abi>armeabi-v7a</Abi>
     </AndroidNativeLibrary>
