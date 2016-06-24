@@ -6,4 +6,6 @@
     <string name="stop">Stop</string>
     <string name="audioChan">Audio</string>
     <string name="subtitle">Subtitles</string>
+    <string name="audioChanDialogTitle">Select Audio Track</string>
+    <string name="subtitleDialogTitle">Select Subtitle Track</string>
 </resources>
