@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Sample Player</string>
+    <string name="empty_string" translatable="false"></string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="audioChan">Audio</string>
+    <string name="subtitle">Subtitles</string>
 </resources>
