@@ -63,19 +63,31 @@ public class MainActivity extends AppCompatActivity
 
     private static String TAG = "MainActivity";
 
+    // URLs for playback
+    //-------------------
     // Big Buck Bunny
-    private static String BBB_URL = "https://content.uplynk.com/89671366904f49af828c1d422bc526b5.m3u8";
+    private final String BBB_URL = "https://content.uplynk.com/89671366904f49af828c1d422bc526b5.m3u8";
+    // Sintel w Alt Audio and WebVTT
+    private final String SINTEL_ALT_AUD = "http://content.uplynk.com/fff0e99646ba44cda6e3230cbfd8d8d9.m3u8?ad=sample_ads&ad.preroll=1";
 
+    // com.uplynk.media.MediaPlayer provides access the uplynk playback library
     private MediaPlayer mMediaPlayer;
+    // MediaController will let us show playback controls on the video surface
     private MediaController mMediaController;
+    // SurfaceView - the view where the video will be rendered
     private SurfaceView mSurfaceView;
+    // SurfaceHolder - accessor class for SurfaceView
     private SurfaceHolder mSurfaceHolder;
-    private FrameLayout mSurfaceParent = null;
 
-    private boolean mError = false;
+    // Text view for first line of metadata display
     private TextView mMetadataTextView;
+    // Text view for second line of metadata display
     private TextView mMetadataTextView2;
+    // Dialog for audio/subtitle track selection
     private AlertDialog mTracksDialog;
+    // Flag an error condition
+    private boolean mError = false;
+    // Flag for enabling/disabling display of captions
     private boolean mCaptionsEnabled = false;
 
     @Override
@@ -83,11 +95,9 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        logDisplayConfiguration();
-        // enable for layout debugging
-//FIXME        ViewServer.get(this).addWindow(this);
+        logDisplayAndBuildInfo();
 
-        // hide kindle's soft bar
+        // Workaround -- Hide kindle's soft bar
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN;
         getWindow().setAttributes(lp);
@@ -98,7 +108,6 @@ public class MainActivity extends AppCompatActivity
         MediaPlayer.initSurfaceHolder(mSurfaceHolder);
         mSurfaceHolder.addCallback(this);
         mSurfaceView.setVisibility(View.VISIBLE);
-        mSurfaceParent = (FrameLayout) mSurfaceView.getParent();
 
         mMetadataTextView = (TextView) this.findViewById(R.id.textView);
         mMetadataTextView2 = (TextView) this.findViewById(R.id.textView2);
@@ -130,7 +139,7 @@ public class MainActivity extends AppCompatActivity
                     } else if (mMediaPlayer.getState() == MediaPlayer.PLAYER_STATE_STOPPED) {
                         Log.w(TAG, "Calling MediaPlayer.setDataSource()");
                         try {
-                            mMediaPlayer.setDataSource(BBB_URL);
+                            mMediaPlayer.setDataSource(SINTEL_ALT_AUD);
                             mMediaPlayer.prepareAsync();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -205,7 +214,6 @@ public class MainActivity extends AppCompatActivity
 
         super.onResume();
         Log.w(TAG, "Activity::OnResume()");
-//FIXME        ViewServer.get(this).setFocusedWindow(this);
     }
 
     @Override
@@ -216,17 +224,12 @@ public class MainActivity extends AppCompatActivity
         Log.w(TAG, "Activity::OnStart()");
 
         if (mMediaPlayer == null /* || !mMediaPlayer.isPlaying() */) {
-                createMediaPlayerAfterDelay(BBB_URL, 500);
+            createMediaPlayerAfterDelay(SINTEL_ALT_AUD, 500);
         }
     }
 
     @Override
     protected void onDestroy() {
-        if (mSurfaceParent != null) {
-            // FIXME?
-            //mSurfaceParent.getViewTreeObserver().removeGlobalOnLayoutListener(_layoutListener);
-        }
-
         // make sure to unload the media player
         if (mMediaPlayer != null) {
             mMediaPlayer.release();
@@ -234,9 +237,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         super.onDestroy();
-//FIXME        ViewServer.get(this).removeWindow(this);
     }
 
+    /*
+     * Resize the video surface when the screen orientation changes
+     */
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -252,7 +257,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onGlobalLayout() {
                 Log.e(TAG, String.format("SurfaceView Parent New Size %dx%d", parent.getWidth(), parent.getHeight()));
-                parent.getViewTreeObserver().removeGlobalOnLayoutListener(this); // .removeOnGlobalLayoutListener(this);
+                parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 if (mMediaPlayer != null) {
                     resizeSurfaceViewInParent(mSurfaceView, mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
                 }
@@ -399,7 +404,7 @@ public class MainActivity extends AppCompatActivity
         // if ROLL_UP, render single character or handle other event type
         else if (event.mode == CaptionMode.ROLL_UP) {
             if (event.eventType == CaptionEventType.TEXT) {
-                CaptionEvent.CaptionCharacter cc = event.character;
+                // CaptionEvent.CaptionCharacter cc = event.character;
                 // Log.d(TAG,String.format("CC %c",cc.character()));
                 // render individual character
             } else if (event.eventType == CaptionEventType.LINEBREAK) {
@@ -458,7 +463,7 @@ public class MainActivity extends AppCompatActivity
         if (mp == mMediaPlayer) {
             mp.reset();
             try {
-                mp.setDataSource(BBB_URL);
+                mp.setDataSource(SINTEL_ALT_AUD);
                 mp.prepareAsync();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -594,10 +599,13 @@ public class MainActivity extends AppCompatActivity
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnVideoSizeChangedListener(this);
         mMediaPlayer.setOnID3MetadataListener(this);
-
         mMediaPlayer.setOnUplynkMetadataListener(this);
         mMediaPlayer.setOnCaptionEventListener(this);
         mMediaPlayer.setOnAssetBoundaryListener(this);
+        mMediaPlayer.setOnBufferingUpdateListener(this);
+        mMediaPlayer.setOnInfoListener(this);
+        mMediaPlayer.setOnVideoSizeChangedListener(this);
+        mMediaPlayer.setOnUplynkSegmentListener(this);
 
         // Attach Caption container (optional)
         mMediaPlayer.setCaptionsEnabled(true);
@@ -660,7 +668,7 @@ public class MainActivity extends AppCompatActivity
     private void resizeSurfaceViewInParent(SurfaceView sv, int width, int height) {
         // get the surface's parent
         View v = ((ViewGroup) this.findViewById(android.R.id.content)).getChildAt(0);
-        Rect shrect = sv.getHolder().getSurfaceFrame();
+        Rect shRectangle = sv.getHolder().getSurfaceFrame();
 
         View parent = (View) sv.getParent();
 
@@ -675,7 +683,7 @@ public class MainActivity extends AppCompatActivity
         Log.i(TAG,
                 String.format(
                         "Window Size: %dx%d     Surface Holder Rect: %dx%d    Parent Class: %s  %dx%d",
-                        wW, wH, shrect.width(), shrect.height(), sv.getParent().getClass().getName(), parent.getWidth(),
+                        wW, wH, shRectangle.width(), shRectangle.height(), sv.getParent().getClass().getName(), parent.getWidth(),
                         parent.getHeight()));
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sv.getLayoutParams());
@@ -712,7 +720,7 @@ public class MainActivity extends AppCompatActivity
         //sv.getHolder().setFixedSize(lp.width+lp.leftMargin, lp.height+lp.topMargin);
     }
 
-    private String formatScreenSize(int screenLayout) {
+    private String screenSizeToString(int screenLayout) {
         int size = (screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK);
         if (size == Configuration.SCREENLAYOUT_SIZE_SMALL)
             return "SMALL";
@@ -725,16 +733,13 @@ public class MainActivity extends AppCompatActivity
         return "Unknown";
     }
 
-    private void logDisplayConfiguration() {
+    private void logDisplayAndBuildInfo() {
         DisplayMetrics dm = getResources().getDisplayMetrics();
-        Configuration config = this.getResources().getConfiguration();
+        Configuration config = getResources().getConfiguration();
         int smallestScreenWidthDp = (int) (dm.widthPixels / dm.density);
 
-        // FIXME not a very good way to determine
-        boolean IS_PHONE = ((config.screenLayout & Configuration.SCREENLAYOUT_SIZE_MASK) < Configuration.SCREENLAYOUT_SIZE_LARGE);
-
         Log.i("Display", String.format("Density: %f, Width: %dpx, Height: %dpx, Smallest Width: %ddp, Screen Size: %s",
-                dm.density, dm.widthPixels, dm.heightPixels, smallestScreenWidthDp, formatScreenSize(config.screenLayout)));
+                dm.density, dm.widthPixels, dm.heightPixels, smallestScreenWidthDp, screenSizeToString(config.screenLayout)));
 
         Log.w(TAG, String.format("INIT WITH Android (%s) Display: %s, Brand: %s, Manufacturer: %s, Model: %s, Product: %s, Hardware: %s",
                 Build.VERSION.RELEASE, Build.DISPLAY, Build.BRAND, Build.MANUFACTURER, Build.MODEL, Build.PRODUCT, Build.HARDWARE));
@@ -770,14 +775,14 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-        TrackAdapter ta = new TrackAdapter(this, android.R.layout.simple_list_item_1, tracks);
+        TrackAdapter trackAdapter = new TrackAdapter(this, android.R.layout.simple_list_item_1, tracks);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if (optionsType == TrackOptionsType.AUDIO) {
             builder.setTitle(R.string.audioChanDialogTitle);
         } else {
             builder.setTitle(R.string.subtitleDialogTitle);
         }
-        builder.setAdapter(ta, this);
+        builder.setAdapter(trackAdapter, this);
         builder.setNegativeButton("Cancel", null);
         builder.setInverseBackgroundForced(true);
 
@@ -797,7 +802,7 @@ public class MainActivity extends AppCompatActivity
 
                 runOnUiThread(new Runnable() {
                     public void run() {
-                        createMediaPlayer(url);
+                        playContent(url);
                     }
                 });
 
@@ -805,66 +810,8 @@ public class MainActivity extends AppCompatActivity
         }).start();
     }
 
-    private void createMediaPlayer(final String url) {
-        Log.i(TAG, "Creating media player with url " + url);
-        //_targetURL = url;
-
+    private void restartMedia() {
         if (mMediaPlayer != null) {
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
-
-        // Create a new media player and set the listeners
-        mMediaPlayer = new MediaPlayer();
-        mMediaPlayer.setContext(this);
-        //mMediaPlayer.setMaxBitrate(500);
-
-        mMediaPlayer.setOnErrorListener(this);
-        mMediaPlayer.setOnBufferingUpdateListener(this);
-        mMediaPlayer.setOnCompletionListener(this);
-        mMediaPlayer.setOnSeekCompleteListener(this);
-        mMediaPlayer.setOnPreparedListener(this);
-        mMediaPlayer.setOnInfoListener(this);
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mMediaPlayer.setOnVideoSizeChangedListener(this);
-        mMediaPlayer.setOnUplynkMetadataListener(this);
-        mMediaPlayer.setOnCaptionEventListener(this);
-        mMediaPlayer.setOnAssetBoundaryListener(this);
-        mMediaPlayer.setOnID3MetadataListener(this);
-        mMediaPlayer.setOnUplynkSegmentListener(this);
-
-        // attach caption container
-        mMediaPlayer.setCaptionLayoutContainer((RelativeLayout) this.findViewById(R.id.ccContainer));
-        mMediaPlayer.setCaptionsEnabled(mCaptionsEnabled);
-        if (mCaptionsEnabled)
-            mMediaPlayer.setCaptionStyle(new CaptionStyle());
-
-        mMediaController = new MediaController(this);
-        mMediaController.setAnchorView((View) mSurfaceView.getParent());
-
-        // Set the surface for the video output
-        mMediaPlayer.setDisplay(mSurfaceHolder);
-        mMediaPlayer.setScreenOnWhilePlaying(true);
-
-        try {
-            mMediaPlayer.setDataSource(url);
-            mMediaPlayer.prepareAsync();
-
-            Log.w(TAG, "finished with create player call");
-
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void restartMedia()
-    {
-        if(mMediaPlayer != null)
-        {
             mMediaPlayer.stop();
             mMediaPlayer.release();
             mMediaPlayer = null;
@@ -875,15 +822,15 @@ public class MainActivity extends AppCompatActivity
         //this will re-initialize the surface
         mSurfaceHolder.setFormat(android.graphics.PixelFormat.OPAQUE);
 
-        createMediaPlayerAfterDelay(BBB_URL, 500);
+        createMediaPlayerAfterDelay(SINTEL_ALT_AUD, 500);
     }
 
-    public void showToast(final String toast) {
+    public void showToast(final String message) {
         final Activity ctx = this;
 
         runOnUiThread(new Runnable() {
             public void run() {
-                Toast.makeText(ctx, toast, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show();
             }
         });
     }
