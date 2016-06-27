@@ -62,13 +62,9 @@ public class MainActivity extends AppCompatActivity
         SurfaceHolder.Callback {
 
     private static String TAG = "MainActivity";
-
-    // URLs for playback
-    //-------------------
-    // Big Buck Bunny
-    private final String BBB_URL = "https://content.uplynk.com/89671366904f49af828c1d422bc526b5.m3u8";
+    
     // Sintel w Alt Audio and WebVTT
-    private final String SINTEL_ALT_AUD = "http://content.uplynk.com/fff0e99646ba44cda6e3230cbfd8d8d9.m3u8?ad=sample_ads&ad.preroll=1";
+    private final String TEST_URL = "http://content.uplynk.com/fff0e99646ba44cda6e3230cbfd8d8d9.m3u8";
 
     // com.uplynk.media.MediaPlayer provides access the uplynk playback library
     private MediaPlayer mMediaPlayer;
@@ -85,6 +81,8 @@ public class MainActivity extends AppCompatActivity
     private TextView mMetadataTextView2;
     // Dialog for audio/subtitle track selection
     private AlertDialog mTracksDialog;
+    // Keep the type of the last audio/cc dialog shown
+    private TrackOptionsType mDialogType;
     // Flag an error condition
     private boolean mError = false;
     // Flag for enabling/disabling display of captions
@@ -97,7 +95,7 @@ public class MainActivity extends AppCompatActivity
 
         logDisplayAndBuildInfo();
 
-        // Workaround -- Hide kindle's soft bar
+        // Setting FULLSCREEN hides top bar (clock and network icons)
         WindowManager.LayoutParams lp = getWindow().getAttributes();
         lp.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN;
         getWindow().setAttributes(lp);
@@ -139,7 +137,7 @@ public class MainActivity extends AppCompatActivity
                     } else if (mMediaPlayer.getState() == MediaPlayer.PLAYER_STATE_STOPPED) {
                         Log.w(TAG, "Calling MediaPlayer.setDataSource()");
                         try {
-                            mMediaPlayer.setDataSource(SINTEL_ALT_AUD);
+                            mMediaPlayer.setDataSource(TEST_URL);
                             mMediaPlayer.prepareAsync();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -224,7 +222,7 @@ public class MainActivity extends AppCompatActivity
         Log.w(TAG, "Activity::OnStart()");
 
         if (mMediaPlayer == null /* || !mMediaPlayer.isPlaying() */) {
-            createMediaPlayerAfterDelay(SINTEL_ALT_AUD, 500);
+            createMediaPlayerAfterDelay(TEST_URL, 500);
         }
     }
 
@@ -463,7 +461,7 @@ public class MainActivity extends AppCompatActivity
         if (mp == mMediaPlayer) {
             mp.reset();
             try {
-                mp.setDataSource(SINTEL_ALT_AUD);
+                mp.setDataSource(TEST_URL);
                 mp.prepareAsync();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -561,19 +559,13 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onClick(DialogInterface dialog, int which) {
         if (mMediaPlayer == null) return;
-        int titleId = getResources().getIdentifier("alertTitle", "id", "android");
-        if (titleId > 0) {
-            TextView dialogTitle = (TextView) ((AlertDialog) dialog).findViewById(titleId);
-            if (dialogTitle != null &&
-                    dialogTitle.getText().toString().compareTo(String.valueOf(R.string.subtitleDialogTitle)) == 0) {
-                Log.i(TAG, "SubTitle Track Selection: " + which);
-                mMediaPlayer.selectSubtitleTrack(which);
-            } else {
-                Log.i(TAG, "Audio Track Selection: " + which);
-                mMediaPlayer.selectAudioTrack(which);
-            }
+
+        if (mDialogType == TrackOptionsType.SUBTITLES){
+            Log.i(TAG, "SubTitle Track Selection: " + which);
+            mMediaPlayer.selectSubtitleTrack(which);
         } else {
-            Log.i(TAG, "Unable to determine whether we are selecting subtitles or audio tracks" + which);
+            Log.i(TAG, "Audio Track Selection: " + which);
+            mMediaPlayer.selectAudioTrack(which);
         }
     }
 
@@ -590,7 +582,7 @@ public class MainActivity extends AppCompatActivity
 
         mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
         mMediaPlayer.setContext(this);     // allow persisting bandwidth stats (optional)
-        //mMediaPlayer.setMaxBitrate(1536);  // bandwidth limit in Kps (optional)
+        //mMediaPlayer.setMaxBitrate(1536);  // bandwidth limit in Kbps (optional)
 
         // Attach Listeners
         mMediaPlayer.setOnErrorListener(this);
@@ -613,9 +605,9 @@ public class MainActivity extends AppCompatActivity
 
         // Set Caption Styles (optional)
         CaptionStyle style = new CaptionStyle();
-        style.setBackgroundColor(0x3300ff00);
+        style.setBackgroundColor(0x883B4963); // AARRGGBB
         style.setTextColor(0xffdddddd);
-        style.setTextSize(CaptionStyle.TEXT_SIZE_SMALL);
+        style.setTextSize(CaptionStyle.TEXT_SIZE_NORMAL); // 100% of native size
         style.setEdgeType(CaptionStyle.EDGE_TYPE_DROP_SHADOW);
         style.setTypeface(Typeface.SANS_SERIF);
         mMediaPlayer.setCaptionStyle(style);
@@ -781,11 +773,13 @@ public class MainActivity extends AppCompatActivity
             builder.setTitle(R.string.audioChanDialogTitle);
         } else {
             builder.setTitle(R.string.subtitleDialogTitle);
+            //builder.setTitle(R.string.subtitleDialogTitle);
         }
         builder.setAdapter(trackAdapter, this);
         builder.setNegativeButton("Cancel", null);
         builder.setInverseBackgroundForced(true);
 
+        mDialogType = optionsType;
         mTracksDialog = builder.create();
         // show the dialog
         mTracksDialog.show();
@@ -822,7 +816,7 @@ public class MainActivity extends AppCompatActivity
         //this will re-initialize the surface
         mSurfaceHolder.setFormat(android.graphics.PixelFormat.OPAQUE);
 
-        createMediaPlayerAfterDelay(SINTEL_ALT_AUD, 500);
+        createMediaPlayerAfterDelay(TEST_URL, 500);
     }
 
     public void showToast(final String message) {
