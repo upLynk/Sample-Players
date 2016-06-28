@@ -1,6 +1,6 @@
 # Sample-Players
 
-This repo contains example apps which demonstrate the use of the Uplynk player libs. Visit https://www.uplynk.com for more info.
+This repo contains example apps which demonstrate the use of the Uplynk player libs. Visit http://www.uplynk.com for more info.
 
 Contents:
 * ./Android/ - An Android Studio project in java
