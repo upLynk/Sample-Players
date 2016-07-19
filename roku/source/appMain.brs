@@ -55,7 +55,7 @@ Sub Main(args As Dynamic)
                HDBranded:true
                ShortDescriptionLine1:"Big Buck Bunny"
                ShortDescriptionLine2:""
-               Description:"Big Buck Bunny is being served using a Wowza server running on Amazon EC2 cloud services. The video is transported via HLS HTTP Live Streaming. A team of small artists from the Blender community produced this open source content..."
+               Description:"Big Buck Bunny is being served from Uplynk. The video is transported via HLS HTTP Live Streaming. A team of small artists from the Blender community produced this open source content..."
                Rating:"NR"
                StarRating:"80"
                Length:600
@@ -63,10 +63,10 @@ Sub Main(args As Dynamic)
                Title:"Big Buck Bunny"
             }
 
-    showSpringboardScreen(itemVenter)  
+   'showSpringboardScreen(itemVenter)
    'showSpringboardScreen(itemMpeg4)  'uncomment this line and comment out the next to see the old mpeg4 example
-   'showSpringboardScreen(item)       'uncomment this line to see the BigBuckBunny example
-    
+   showSpringboardScreen(item)       'uncomment this line to see the BigBuckBunny example
+
     'exit the app gently so that the screen doesn't flash to black
     screenFacade.showMessage("")
     sleep(25)
@@ -74,7 +74,7 @@ End Sub
 
 '*************************************************************
 '** Set the configurable theme attributes for the application
-'** 
+'**
 '** Configure the custom overhang and Logo attributes
 '*************************************************************
 
@@ -95,7 +95,7 @@ Sub initTheme()
 
     'this is an optional theme attribute. the default subtitle color is yellow.
     theme.SubtitleColor = "#dc00dc"
-    
+
     app.SetTheme(theme)
 
 End Sub
@@ -110,7 +110,7 @@ Function showSpringboardScreen(item as object) As Boolean
     screen = CreateObject("roSpringboardScreen")
 
     print "showSpringboardScreen"
-    
+
     screen.SetMessagePort(port)
     screen.AllowUpdates(false)
     if item <> invalid and type(item) = "roAssociativeArray"
@@ -133,7 +133,7 @@ Function showSpringboardScreen(item as object) As Boolean
         if type(msg) = "roSpringboardScreenEvent"
             if msg.isScreenClosed()
                 print "Screen closed"
-                exit while                
+                exit while
             else if msg.isButtonPressed()
                     print "Button pressed: "; msg.GetIndex(); " " msg.GetData()
                     if msg.GetIndex() = 1
@@ -144,7 +144,7 @@ Function showSpringboardScreen(item as object) As Boolean
             else
                 print "Unknown event: "; msg.GetType(); " msg: "; msg.GetMessage()
             endif
-        else 
+        else
             print "wrong type.... type=";msg.GetType(); " msg: "; msg.GetMessage()
         endif
     end while
@@ -169,14 +169,14 @@ Function displayVideo(args As Dynamic)
     'bitrates  = [664]    ' <800 Kbps = 2 dots
     'bitrates  = [996]    ' <1.1Mbps  = 3 dots
     'bitrates  = [2048]    ' >=1.1Mbps = 4 dots
-    bitrates  = [0]    
+    bitrates  = [0]
 
     'Swap the commented values below to play different video clips...
-    urls = ["http://video.ted.com/talks/podcast/CraigVenter_2008_480.mp4"]
-    qualities = ["HD"]
-    StreamFormat = "mp4"
-    title = "Craig Venter Synthetic Life"
-    srt = "file://pkg:/source/craigventer.srt"
+    'urls = ["http://video.ted.com/talks/podcast/CraigVenter_2008_480.mp4"]
+    'qualities = ["HD"]
+    'StreamFormat = "mp4"
+    'title = "Craig Venter Synthetic Life"
+    'srt = "file://pkg:/source/craigventer.srt"
 
     'urls = ["http://video.ted.com/talks/podcast/DanGilbert_2004_480.mp4"]
     'qualities = ["HD"]
@@ -189,11 +189,12 @@ Function displayVideo(args As Dynamic)
     'streamformat = "hls"
     'title = "Apple BipBop Test Stream"
 
-    ' Big Buck Bunny test stream from Wowza
-    'urls = ["http://ec2-174-129-153-104.compute-1.amazonaws.com:1935/vod/smil:BigBuckBunny.smil/playlist.m3u8"]
-    'qualities = ["SD"]
-    'streamformat = "hls"
-    'title = "Big Buck Bunny"
+    ' Big Buck Bunny test stream from Uplynk
+    urls = ["http://content.uplynk.com/062048d702734ca6a38f3e7f8e4f4488.m3u8"]
+    qualities = ["HD"]
+    streamformat = "hls"
+    title = "Big Buck Bunny"
+    srt = "" ' Added this line to work around a Roku channel bug
 
     if type(args) = "roAssociativeArray"
         if type(args.url) = "roString" and args.url <> "" then
@@ -204,28 +205,33 @@ Function displayVideo(args As Dynamic)
         end if
         if type(args.title) = "roString" and args.title <> "" then
             title = args.title
-        else 
+        else
             title = ""
         end if
         if type(args.srt) = "roString" and args.srt <> "" then
             srt = args.StreamFormat
-        else 
+        else
             srt = ""
         end if
     end if
-    
+
     videoclip = CreateObject("roAssociativeArray")
     videoclip.StreamBitrates = bitrates
     videoclip.StreamUrls = urls
     videoclip.StreamQualities = qualities
     videoclip.StreamFormat = StreamFormat
     videoclip.Title = title
+    ' Explicitly declare the Switching Strategy
+    videoclip.SwitchingStrategy = "full-adaptation"
     print "srt = ";srt
     if srt <> invalid and srt <> "" then
         videoclip.SubtitleUrl = srt
     end if
-    
+
     video.SetContent(videoclip)
+    ' The following lines of code work around Roku's HTTPS request issues
+    video.SetCertificatesFile("common:/certs/ca-bundle.crt")
+    video.SetCertificatesDepth(3)
     video.show()
 
     lastSavedPos   = 0
@@ -240,7 +246,7 @@ Function displayVideo(args As Dynamic)
             else if msg.isPlaybackPosition() then
                 nowpos = msg.GetIndex()
                 if nowpos > 10000
-                    
+
                 end if
                 if nowpos > 0
                     if abs(nowpos - lastSavedPos) > statusInterval
@@ -255,4 +261,3 @@ Function displayVideo(args As Dynamic)
         end if
     end while
 End Function
-
