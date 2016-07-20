@@ -1,22 +1,22 @@
-' ********** Copyright 2016 Roku Corp.  All Rights Reserved. ********** 
- 
+' ********** Copyright 2016 Roku Corp.  All Rights Reserved. **********
+
  sub RunUserInterface()
     screen = CreateObject("roSGScreen")
     scene = screen.CreateScene("HomeScene")
     port = CreateObject("roMessagePort")
     screen.SetMessagePort(port)
     screen.Show()
-    
+
     oneRow = GetApiArray()
     list = [
         {
-            Title:"First row"
+            Title:"Uplynk Sample Videos"
             ContentList : oneRow
         }
-        {
-            Title:"Second row"
-            ContentList : oneRow
-        }
+        ''{
+        ''    Title:"Second row"
+        ''    ContentList : oneRow
+        ''}
     ]
     scene.gridContent = ParseXMLContent(list)
 
@@ -25,7 +25,7 @@
         print "------------------"
         print "msg = "; msg
     end while
-    
+
     if screen <> invalid then
         screen.Close()
         screen = invalid
@@ -35,7 +35,7 @@ end sub
 
 Function ParseXMLContent(list As Object)
     RowItems = createObject("RoSGNode","ContentNode")
-    
+
     for each rowAA in list
         row = createObject("RoSGNode","ContentNode")
         row.Title = rowAA.Title
@@ -56,9 +56,13 @@ End Function
 
 
 Function GetApiArray()
-    url = CreateObject("roUrlTransfer")
-    url.SetUrl("http://api.delvenetworks.com/rest/organizations/59021fabe3b645968e382ac726cd6c7b/channels/1cfd09ab38e54f48be8498e0249f5c83/media.rss")
-    rsp = url.GetToString()
+    ' HACK: Read local file instead of downloading RSS
+    ' url = CreateObject("roUrlTransfer")
+    ' url.SetUrl("http://some.url/media.rss")
+    ' rsp = url.GetToString()
+    file = CreateObject("roByteArray")
+    file.ReadFile("pkg:/media.rss")
+    rsp = file.ToAsciiString()
 
     responseXML = ParseXML(rsp)
     responseXML = responseXML.GetChildElements()
@@ -76,8 +80,8 @@ Function GetApiArray()
                     if xmlItem.getName() = "media:content"
                         item.stream = {url : xmlItem.url}
                         item.url = xmlItem.getAttributes().url
-                        item.streamFormat = "mp4"
-                        
+                        item.streamFormat = "hls"
+
                         mediaContent = xmlItem.GetChildElements()
                         for each mediaContentItem in mediaContent
                             if mediaContentItem.getName() = "media:thumbnail"
