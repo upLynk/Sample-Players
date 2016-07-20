@@ -1,3 +1,7 @@
+This is a copy of Roku's simplevideoplayer sample customized for
+playing content from Uplynk's servers.
+Documentation here: http://support.uplynk.com/tut_roku_test.html
+
 The simplevideoplayer example is the barebones 
 application that plays a video. It has hardcoded 
 content parameters that allow for quick modification
@@ -19,15 +23,7 @@ Section 3.3 for more information on setting the
 content meta-data parameters about your video.
 
 **************************************************************
-This example uses videos streamed directly from the TED Talks 
-website (www.ted.com). Please visit the TED website to see the
-full lineup of talks made available by TED. 
-
-Please see the following for license details:
-http://creativecommons.org/licenses/by-nc-nd/3.0/
-
-**************************************************************
-This example uses the Big Buck Bunny video streamed from a Wowza Server.
+This example uses the Big Buck Bunny video streamed from Uplynk servers 
 Big Buck Bunny is open source content created by the Blender Foundation.
 
 Please see the following for license details:
