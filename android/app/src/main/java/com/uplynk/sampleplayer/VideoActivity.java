@@ -2,6 +2,7 @@ package com.uplynk.sampleplayer;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -21,6 +22,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -44,7 +46,7 @@ import com.uplynk.media.MediaPlayer.UplynkTrackInfo;
 import java.io.IOException;
 import java.util.Vector;
 
-public class MainActivity extends AppCompatActivity
+public class VideoActivity extends AppCompatActivity
         implements DialogInterface.OnClickListener,
         MediaController.MediaPlayerControl,
         MediaPlayer.OnAssetBoundaryListener,
@@ -61,10 +63,10 @@ public class MainActivity extends AppCompatActivity
         MediaPlayer.OnVideoSizeChangedListener,
         SurfaceHolder.Callback {
 
-    private static String TAG = "MainActivity";
+    private static String TAG = "VideoActivity";
     
     // Sintel w Alt Audio and WebVTT
-    private final String TEST_URL = "http://content.uplynk.com/fff0e99646ba44cda6e3230cbfd8d8d9.m3u8";
+    private String mUrlToPlay = "";
 
     // com.uplynk.media.MediaPlayer provides access the uplynk playback library
     private MediaPlayer mMediaPlayer;
@@ -91,7 +93,15 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        // remove title
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        setContentView(R.layout.activity_video);
+
+        Intent intent = getIntent();
+        mUrlToPlay = intent.getStringExtra("java.lang.String");
 
         logDisplayAndBuildInfo();
 
@@ -137,7 +147,7 @@ public class MainActivity extends AppCompatActivity
                     } else if (mMediaPlayer.getState() == MediaPlayer.PLAYER_STATE_STOPPED) {
                         Log.w(TAG, "Calling MediaPlayer.setDataSource()");
                         try {
-                            mMediaPlayer.setDataSource(TEST_URL);
+                            mMediaPlayer.setDataSource(mUrlToPlay);
                             mMediaPlayer.prepareAsync();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -222,7 +232,7 @@ public class MainActivity extends AppCompatActivity
         Log.w(TAG, "Activity::OnStart()");
 
         if (mMediaPlayer == null /* || !mMediaPlayer.isPlaying() */) {
-            createMediaPlayerAfterDelay(TEST_URL, 500);
+            createMediaPlayerAfterDelay(mUrlToPlay, 500);
         }
     }
 
@@ -461,7 +471,7 @@ public class MainActivity extends AppCompatActivity
         if (mp == mMediaPlayer) {
             mp.reset();
             try {
-                mp.setDataSource(TEST_URL);
+                mp.setDataSource(mUrlToPlay);
                 mp.prepareAsync();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -816,7 +826,7 @@ public class MainActivity extends AppCompatActivity
         //this will re-initialize the surface
         mSurfaceHolder.setFormat(android.graphics.PixelFormat.OPAQUE);
 
-        createMediaPlayerAfterDelay(TEST_URL, 500);
+        createMediaPlayerAfterDelay(mUrlToPlay, 500);
     }
 
     public void showToast(final String message) {
