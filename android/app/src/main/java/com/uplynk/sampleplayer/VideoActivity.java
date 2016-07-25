@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -250,9 +249,11 @@ public class VideoActivity extends AppCompatActivity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        Log.w(TAG, "Activity::OnConfigurationChanged  -  Screen Orientation:" + ((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) ? "Landscape" : "Portrait"));
+        Log.w(TAG, "Activity::OnConfigurationChanged  -  Screen Orientation:" +
+                ((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) ? "Landscape" : "Portrait"));
 
         final View parent = (View) mSurfaceView.getParent();
+        final int oldWidth = parent.getWidth();
 
         Log.e(TAG, String.format("SurfaceView Parent Size: %dx%d", parent.getWidth(), parent.getHeight()));
 
@@ -260,10 +261,13 @@ public class VideoActivity extends AppCompatActivity
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                Log.e(TAG, String.format("SurfaceView Parent New Size %dx%d", parent.getWidth(), parent.getHeight()));
-                parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                if (mMediaPlayer != null) {
-                    resizeSurfaceViewInParent(mSurfaceView, mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
+                // Getting multiple layout changes, so only do our thing when the size actually changes
+                if (parent.getWidth() != oldWidth) {
+                    Log.e(TAG, String.format("SurfaceView Parent New Size %dx%d", parent.getWidth(), parent.getHeight()));
+                    parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    if (mMediaPlayer != null) {
+                        resizeSurfaceViewInParent(mSurfaceView, mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
+                    }
                 }
             }
         });
@@ -685,10 +689,6 @@ public class VideoActivity extends AppCompatActivity
                         parent.getHeight()));
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sv.getLayoutParams());
-        lp.width = width;
-        lp.height = height;
-        lp.leftMargin = 0;
-        lp.topMargin = 0;
 
         float contentAspect = ((float) width / (float) height);
         float surfaceAspect = ((float) pW / (float) pH);
@@ -714,6 +714,7 @@ public class VideoActivity extends AppCompatActivity
 
         // Commit the layout parameters
         sv.setLayoutParams(lp);
+        Log.i(TAG, "resizeSurfaceViewInParent done");
         // Android 2.3 may also need the fixedSize property set to updated values
         //sv.getHolder().setFixedSize(lp.width+lp.leftMargin, lp.height+lp.topMargin);
     }
