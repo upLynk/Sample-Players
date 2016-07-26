@@ -100,7 +100,7 @@
             android:textColor="#ffffffff"
             android:textSize="14sp"
             android:text="@string/empty_string"
-            tools:context=".MainActivity" />
+            tools:context=".VideoActivity" />
 
         <TextView
             android:id="@+id/textView2"
@@ -113,7 +113,7 @@
             android:textColor="#ffffffff"
             android:textSize="14sp"
             android:text="@string/empty_string"
-            tools:context=".MainActivity" />
+            tools:context=".VideoActivity" />
 
 
     </RelativeLayout>

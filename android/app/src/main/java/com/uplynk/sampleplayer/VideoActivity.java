@@ -2,6 +2,7 @@ package com.uplynk.sampleplayer;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.graphics.Typeface;
@@ -44,7 +45,7 @@ import com.uplynk.media.MediaPlayer.UplynkTrackInfo;
 import java.io.IOException;
 import java.util.Vector;
 
-public class MainActivity extends AppCompatActivity
+public class VideoActivity extends AppCompatActivity
         implements DialogInterface.OnClickListener,
         MediaController.MediaPlayerControl,
         MediaPlayer.OnAssetBoundaryListener,
@@ -61,10 +62,10 @@ public class MainActivity extends AppCompatActivity
         MediaPlayer.OnVideoSizeChangedListener,
         SurfaceHolder.Callback {
 
-    private static String TAG = "MainActivity";
+    private static String TAG = "VideoActivity";
     
     // Sintel w Alt Audio and WebVTT
-    private final String TEST_URL = "http://content.uplynk.com/fff0e99646ba44cda6e3230cbfd8d8d9.m3u8";
+    private String mUrlToPlay = "";
 
     // com.uplynk.media.MediaPlayer provides access the uplynk playback library
     private MediaPlayer mMediaPlayer;
@@ -91,7 +92,11 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        setContentView(R.layout.activity_video);
+
+        Intent intent = getIntent();
+        mUrlToPlay = intent.getStringExtra("java.lang.String");
 
         logDisplayAndBuildInfo();
 
@@ -137,7 +142,7 @@ public class MainActivity extends AppCompatActivity
                     } else if (mMediaPlayer.getState() == MediaPlayer.PLAYER_STATE_STOPPED) {
                         Log.w(TAG, "Calling MediaPlayer.setDataSource()");
                         try {
-                            mMediaPlayer.setDataSource(TEST_URL);
+                            mMediaPlayer.setDataSource(mUrlToPlay);
                             mMediaPlayer.prepareAsync();
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -222,7 +227,7 @@ public class MainActivity extends AppCompatActivity
         Log.w(TAG, "Activity::OnStart()");
 
         if (mMediaPlayer == null /* || !mMediaPlayer.isPlaying() */) {
-            createMediaPlayerAfterDelay(TEST_URL, 500);
+            createMediaPlayerAfterDelay(mUrlToPlay, 500);
         }
     }
 
@@ -244,9 +249,11 @@ public class MainActivity extends AppCompatActivity
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
-        Log.w(TAG, "Activity::OnConfigurationChanged  -  Screen Orientation:" + ((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) ? "Landscape" : "Portrait"));
+        Log.w(TAG, "Activity::OnConfigurationChanged  -  Screen Orientation:" +
+                ((newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) ? "Landscape" : "Portrait"));
 
         final View parent = (View) mSurfaceView.getParent();
+        final int oldWidth = parent.getWidth();
 
         Log.e(TAG, String.format("SurfaceView Parent Size: %dx%d", parent.getWidth(), parent.getHeight()));
 
@@ -254,10 +261,13 @@ public class MainActivity extends AppCompatActivity
         observer.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
-                Log.e(TAG, String.format("SurfaceView Parent New Size %dx%d", parent.getWidth(), parent.getHeight()));
-                parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                if (mMediaPlayer != null) {
-                    resizeSurfaceViewInParent(mSurfaceView, mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
+                // Getting multiple layout changes, so only do our thing when the size actually changes
+                if (parent.getWidth() != oldWidth) {
+                    Log.e(TAG, String.format("SurfaceView Parent New Size %dx%d", parent.getWidth(), parent.getHeight()));
+                    parent.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    if (mMediaPlayer != null) {
+                        resizeSurfaceViewInParent(mSurfaceView, mMediaPlayer.getVideoWidth(), mMediaPlayer.getVideoHeight());
+                    }
                 }
             }
         });
@@ -461,7 +471,7 @@ public class MainActivity extends AppCompatActivity
         if (mp == mMediaPlayer) {
             mp.reset();
             try {
-                mp.setDataSource(TEST_URL);
+                mp.setDataSource(mUrlToPlay);
                 mp.prepareAsync();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -679,10 +689,6 @@ public class MainActivity extends AppCompatActivity
                         parent.getHeight()));
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(sv.getLayoutParams());
-        lp.width = width;
-        lp.height = height;
-        lp.leftMargin = 0;
-        lp.topMargin = 0;
 
         float contentAspect = ((float) width / (float) height);
         float surfaceAspect = ((float) pW / (float) pH);
@@ -708,6 +714,7 @@ public class MainActivity extends AppCompatActivity
 
         // Commit the layout parameters
         sv.setLayoutParams(lp);
+        Log.i(TAG, "resizeSurfaceViewInParent done");
         // Android 2.3 may also need the fixedSize property set to updated values
         //sv.getHolder().setFixedSize(lp.width+lp.leftMargin, lp.height+lp.topMargin);
     }
@@ -816,7 +823,7 @@ public class MainActivity extends AppCompatActivity
         //this will re-initialize the surface
         mSurfaceHolder.setFormat(android.graphics.PixelFormat.OPAQUE);
 
-        createMediaPlayerAfterDelay(TEST_URL, 500);
+        createMediaPlayerAfterDelay(mUrlToPlay, 500);
     }
 
     public void showToast(final String message) {
