@@ -8,4 +8,5 @@
     <string name="subtitle">Subtitles</string>
     <string name="audioChanDialogTitle">Select Audio Track</string>
     <string name="subtitleDialogTitle">Select Subtitle Track</string>
+    <string name="thumbnail_image">Thumbnail image</string>
 </resources>

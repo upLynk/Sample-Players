@@ -1,14 +1,20 @@
 package com.uplynk.sampleplayer;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class PlaylistActivity extends AppCompatActivity {
@@ -86,6 +92,52 @@ public class PlaylistActivity extends AppCompatActivity {
                 "https://content.uplynk.com/a1aaee274cd8452db1b287b6685d8f22.m3u8",
                 "https://stg-ec-norcal-u.uplynk.com/slices/a1a/e2cb36cb397f47a18371e18f40ec01b7/a1aaee274cd8452db1b287b6685d8f22/poster_b72b501722b5470a8d93fbde5a013c4d.jpeg"));
 
+        new DownloadPoster().execute(list);
+
         return list;
+    }
+
+    // TODO we could keep the downloaded bitmaps instead of downloading each time
+    private class DownloadPoster extends AsyncTask<ArrayList<VideoItemInfo>, Void, Void> {
+
+        @Override
+        protected Void doInBackground(ArrayList<VideoItemInfo>... arrayLists) {
+
+            ArrayList<VideoItemInfo> itemInfos = arrayLists[0];
+
+//            Log.d(TAG, "Starting poster downloads");
+            for (VideoItemInfo item : itemInfos) {
+                String posterUrl = item.getPosterUrl();
+                if (posterUrl != null && !posterUrl.isEmpty()) {
+//                    Log.d(TAG, "url: " + posterUrl);
+                    Bitmap posterBitmap = null;
+
+                    try {
+                        InputStream in = new URL(posterUrl).openStream();
+                        posterBitmap = BitmapFactory.decodeStream(in);
+                    } catch (Exception e) {
+                        Log.e("Error", e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    if (posterBitmap != null) {
+                        item.setPosterBitmap(posterBitmap);
+
+
+                        // Notify views to update
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //mListAdapter.notifyDataSetChanged();
+                                ((BaseAdapter) mListAdapter).notifyDataSetChanged();
+                            }
+                        });
+                    }
+                } // end if (posterUrl != null && !posterUrl.isEmpty())
+            } // end for (VideoItemInfo item : itemInfos)
+//            Log.d(TAG, "Done with poster downloads");
+
+            return null;
+        }
     }
 }

@@ -41,6 +41,7 @@ import com.uplynk.media.MediaPlayer.UplynkMetadata;
 import com.uplynk.media.MediaPlayer.UplynkSegment;
 import com.uplynk.media.MediaPlayer.UplynkTrackInfo;
 import com.uplynk.widgets.MediaController;
+import com.uplynk.widgets.UplynkTrackAdapter;
 
 import java.io.IOException;
 import java.util.Vector;
@@ -63,7 +64,7 @@ public class VideoActivity extends AppCompatActivity
         SurfaceHolder.Callback {
 
     private static String TAG = "VideoActivity";
-    
+
     // Sintel w Alt Audio and WebVTT
     private String mUrlToPlay = "";
 
@@ -468,8 +469,7 @@ public class VideoActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp)
-    {
+    public void onCompletion(MediaPlayer mp) {
         Log.d(TAG, "MediaPlayer::onCompletion called");
 
         // done so close the video activity
@@ -544,82 +544,65 @@ public class VideoActivity extends AppCompatActivity
         }
     }
 
-    public Vector<MediaPlayer.UplynkTrackInfo> getAudioTracks()
-    {
-        if(mMediaPlayer != null)
-        {
+    public Vector<MediaPlayer.UplynkTrackInfo> getAudioTracks() {
+        if (mMediaPlayer != null) {
             return mMediaPlayer.getAudioTrackOptions();
         }
         return null;
     }
 
-    public void selectAudioTrack(int trackNum)
-    {
-        if(mMediaPlayer != null)
-        {
-            Log.i(TAG,"Audio Track Selection: " + trackNum);
+    public void selectAudioTrack(int trackNum) {
+        if (mMediaPlayer != null) {
+            Log.i(TAG, "Audio Track Selection: " + trackNum);
             mMediaPlayer.selectAudioTrack(trackNum);
         }
     }
 
-    public Vector<MediaPlayer.UplynkTrackInfo> getSubtitleTracks()
-    {
-        if(mMediaPlayer != null)
-        {
+    public Vector<MediaPlayer.UplynkTrackInfo> getSubtitleTracks() {
+        if (mMediaPlayer != null) {
             return mMediaPlayer.getSubtitleTrackOptions();
         }
         return null;
     }
 
-    public void selectSubtitleTrack(int trackNum)
-    {
-        if(mMediaPlayer != null)
-        {
-            Log.i(TAG,"Subtitle Track Selection: " + trackNum);
+    public void selectSubtitleTrack(int trackNum) {
+        if (mMediaPlayer != null) {
+            Log.i(TAG, "Subtitle Track Selection: " + trackNum);
             mMediaPlayer.selectSubtitleTrack(trackNum);
         }
     }
 
-    public void setCaptionsEnabled(boolean enabled)
-    {
-        if(mMediaPlayer != null)
-        {
-            Log.i(TAG,"Set Captions Enabled: " + enabled);
+    public void setCaptionsEnabled(boolean enabled) {
+        if (mMediaPlayer != null) {
+            Log.i(TAG, "Set Captions Enabled: " + enabled);
             mMediaPlayer.setCaptionsEnabled(enabled);
         }
     }
 
-    public void setCaptionStyle(CaptionStyle style)
-    {
-        if(mMediaPlayer != null)
-        {
-            Log.i(TAG,"setCaptionStyle: " + style.toString());
+    public void setCaptionStyle(CaptionStyle style) {
+        if (mMediaPlayer != null) {
+            Log.i(TAG, "setCaptionStyle: " + style.toString());
             mMediaPlayer.setCaptionStyle(style);
         }
     }
 
-    public void setVolume(float volume)
-    {
-        if(mMediaPlayer != null)
-        {
-            Log.i(TAG,"setVolume: " + volume);
+    public void setVolume(float volume) {
+        if (mMediaPlayer != null) {
+            Log.i(TAG, "setVolume: " + volume);
             mMediaPlayer.setVolume(volume, volume);
         }
     }
 
     // for future build 96
-    public boolean isLive()
-    {
-        if (mMediaPlayer != null)
-        {
+    public boolean isLive() {
+        if (mMediaPlayer != null) {
             return mMediaPlayer.isLive();
         }
         return false;
     }
 
     // for future build 96
-    public Vector<MediaPlayer.UplynkSegment> getSegmentMap()
-    {
+    public Vector<MediaPlayer.UplynkSegment> getSegmentMap() {
         return mSegmentMap;
     }
 
@@ -645,7 +628,7 @@ public class VideoActivity extends AppCompatActivity
     public void onClick(DialogInterface dialog, int which) {
         if (mMediaPlayer == null) return;
 
-        if (mDialogType == TrackOptionsType.SUBTITLES){
+        if (mDialogType == TrackOptionsType.SUBTITLES) {
             Log.i(TAG, "SubTitle Track Selection: " + which);
             mMediaPlayer.selectSubtitleTrack(which);
         } else {
@@ -849,7 +832,6 @@ public class VideoActivity extends AppCompatActivity
             return;
         }
 
-        TrackAdapter trackAdapter = new TrackAdapter(this, android.R.layout.simple_list_item_1, tracks);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if (optionsType == TrackOptionsType.AUDIO) {
             builder.setTitle(R.string.audioChanDialogTitle);
@@ -857,7 +839,8 @@ public class VideoActivity extends AppCompatActivity
             builder.setTitle(R.string.subtitleDialogTitle);
             //builder.setTitle(R.string.subtitleDialogTitle);
         }
-        builder.setAdapter(trackAdapter, this);
+        UplynkTrackAdapter uplynkTrackAdapter = new UplynkTrackAdapter(this, android.R.layout.simple_list_item_1, tracks);
+        builder.setAdapter(uplynkTrackAdapter, this);
         builder.setNegativeButton("Cancel", null);
         builder.setInverseBackgroundForced(true);
 

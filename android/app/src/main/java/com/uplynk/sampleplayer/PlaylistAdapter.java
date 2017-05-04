@@ -1,10 +1,12 @@
 package com.uplynk.sampleplayer;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,10 +29,17 @@ public class PlaylistAdapter extends ArrayAdapter<VideoItemInfo> {
         // Lookup view for data population
         TextView tvTitle = (TextView) convertView.findViewById(R.id.playlist_item_Title);
         TextView tvURL = (TextView) convertView.findViewById(R.id.playlist_item_URL);
+        ImageView imgPoster = (ImageView) convertView.findViewById(R.id.playlist_item_Thumb);
 
         // Populate the data
         tvTitle.setText(videoItem.getTitle());
         tvURL.setText(videoItem.getUrl());
+        
+        Bitmap bmp = videoItem.getPosterBitmap();
+        // don't erase the default image if we don't have a poster bmp
+        if (bmp != null) {
+            imgPoster.setImageBitmap(bmp);
+        }
 
         return convertView;
     }
