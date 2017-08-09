@@ -1,0 +1,272 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>upLynk Video Embed</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	<link rel="stylesheet" href="node_modules/uplynkhtml5playersdk/dist/plyr.css" />
+	<script type="text/javascript" src="node_modules/uplynkhtml5playersdk/dist/uplynk-core.js"></script>
+	<script type="text/javascript" src="node_modules/uplynkhtml5playersdk/dist/plyr.js"></script>	
+
+<style type="text/css">
+/*************** Global Reset *************/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, font, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-weight: normal;
+	font-style: inherit;
+	font-size: 100%;
+	font-family: inherit;
+	vertical-align: baseline;
+}
+
+:focus { outline: 0; }
+body {
+	line-height: 1.4;
+	color: #000000;
+	font-size: 12px;
+	font-family: Tahoma, Geneva, sans-serif;
+	background-color: #000;
+	overflow: hidden;
+}
+ol, ul { list-style: none;}
+
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+}
+caption, th, td {
+	text-align: left;
+	font-weight: normal;
+}
+blockquote:before, blockquote:after,q:before, q:after {	content: "";}
+blockquote, q {	quotes: "" "";}
+
+/****** End Global Reset *******/
+
+body, html {
+	width: 100%;
+	height: 100%;	
+    margin: 0;
+}
+
+h1 {
+    font-family: arial, sans-serif;
+    font-size:16px;
+    color:#333;
+}
+
+#videoStreams li {
+			margin-right: 10px;
+			cursor: pointer;
+		}		
+		
+		#videoStreams li:hover {
+			cursor: pointer;
+		}
+
+.adaptive-container {
+	position: absolute !important;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	text-align: center;
+    color:white;
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.overlay {
+    position:absolute;
+    top:75px;
+    left:40px;
+    padding:20px 20px 20px 20px;
+    background-color:#ccc;
+    opacity:0.75;
+    filter:alpha(opacity=35); 
+    z-index:2;
+}
+
+.videoContainer {
+    position:absolute;
+    width:100%;
+}
+
+.videoContainer video {
+    min-width: 100%;
+}
+	
+</style>
+</head>
+<body>
+    <button id="hideOrShowBtn">Show/Hide Samples</button>
+    <div class="overlay" id="overlay1">
+        <div id="sampleStreamsDiv">
+            <h1>Input Stream</h1>
+            <div><input type="text" size="80" id="playUrl" value="" />&nbsp;<input type="button" id="loadBtn" value="Load" /></div>
+
+            <h1>Sample Streams</h1>
+
+            <ul id="videoStreams">
+                <li data-src='http://content.uplynk.com/743fe23d890645b693562096724a205e.m3u8'>Elephants Dream</li>
+				<li data-src='http://content.uplynk.com/062048d702734ca6a38f3e7f8e4f4488.m3u8'>Big Buck Bunny</li>
+				<li data-src='http://content.uplynk.com/52ab86c3f6c74d6abf7f162204d51609.m3u8'>Sintel</li>
+				<li data-src='http://content.uplynk.com/52ab86c3f6c74d6abf7f162204d51609.m3u8?ad=sample_ads&ad.preroll=1'>Sintel With Ads</li>
+				<li data-src='http://content.uplynk.com/fff0e99646ba44cda6e3230cbfd8d8d9.m3u8'>Sintel with Spanish Tracks</li>
+				<li data-src='http://content.uplynk.com/fff0e99646ba44cda6e3230cbfd8d8d9.m3u8?ad=sample_ads&ad.preroll=1'>Sintel With Ads and Spanish Track</li>
+				<li data-src='http://content.uplynk.com/52ab86c3f6c74d6abf7f162204d51609.m3u8'>Sintel With Many VTT Tracks</li>
+				<li data-src='http://content.uplynk.com/3af27805db5a447a978e91e93d333636.m3u8'>Tears of Steel</li>
+				<li data-src='http://content.uplynk.com/fe9cbd84ec6540328fe3da9729ca6f5b.m3u8'>Episode 1: Llama Drama</li>
+				<li data-src='https://content.uplynk.com/a1aaee274cd8452db1b287b6685d8f22.m3u8'>Episode 2: Gran Dillama</li>
+            </ul>
+        </div>
+        <div id="optionsDiv">
+            <h1>&gt;&gt; Player Options - Only applied on next load</h1>
+            <div style="width: 100%; display: table;">
+                <div style="display: table-row">
+                    <div style="display: table-cell;"><input type="checkbox" id="optionDebug" checked/><label>Debug</label></div>
+                    <div style="display: table-cell;"><input type="checkbox" id="optionThumbs" checked/><label>Show Thumbnails</label></div>
+                    <div style="display: table-cell;"><input type="checkbox" id="optionAdMarkers" checked/><label>Show Ad Markers</label></div>
+                </div>
+                <div style="display: table-row">
+                    <div style="display: table-cell;"><input type="checkbox" id="optionAdSeek"/><label>Disable Seek During Ads</label></div>
+                    <div style="display: table-cell;"><input type="checkbox" id="optionNative"/><label>Prefer Native Playback</label></div>
+                    <div style="display: table-cell;"><input type="checkbox" id="optionLimitRes"/><label>Limit Resolution to View Size</label></div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="videoContainer">
+        <video id="videoPlayer" class="adaptive-player" controls="default" autoplay hidden></video>
+    </div>
+
+<script type="text/javascript">
+
+var options = {
+	debug: true,
+	showThumbnails: true,
+	showAdBreakMarkers: true,
+	disableSeekDuringAdBreak: false,
+	preferNativePlayback: false,
+    limitResolutionToViewSize: false,
+}
+
+var video = null;
+var player = null;
+var plyrInstance = null;
+
+function load(url) {
+	if (plyrInstance !== null) {
+		//If the video was already initialized, we need to "destroy" to 
+		//prepare to play a new video.
+		plyrInstance.destroy();
+	}
+
+	if(player !== null) {
+		player.destroy();
+	}
+
+	video = document.getElementById("videoPlayer");
+    video.removeAttribute("hidden");
+
+	createAdaptivePlayer(video, options, function(adaptivePlayer) {
+		player = adaptivePlayer;
+
+		player.on(AdaptivePlayer.Event.TxxxID3Frame, function(ev) {
+			//console.log(ev.frame.value);
+		});
+
+		player.on(AdaptivePlayer.Event.PrivID3Frame, function(ev) {
+			//console.log(ev.frame.owner + ", " + ev.frame.data.length + " bytes");
+		});
+
+		player.on(AdaptivePlayer.Event.SliceEntered, function(ev) {
+			//console.log(ev.assetId + ":" + ev.rayChar + ":" + ev.sliceIndex);
+		});
+
+		player.on(AdaptivePlayer.Event.AssetEntered, function(ev) {
+			console.log("Asset Entered: " + ev.asset.asset);
+		});
+
+		player.on(AdaptivePlayer.Event.AdBreakEntered, function(ev) {
+			console.log("Ad Break Entered: " + ev.adBreak.duration);
+		});
+
+		player.on(AdaptivePlayer.Event.LoadError, function(ev) {
+			console.error('ERROR: ' + ev.error + ' (' + ev.code + ')');
+		});
+
+		options.debug = false;
+		plyrInstance = plyr.setup(video, options)[0];
+		plyrInstance.setAdaptivePlayer(player);
+
+		player.load(url);
+	});
+
+    document.getElementById('overlay1').setAttribute("hidden", true);
+    listIsShown = false;
+}
+	
+var ul = document.getElementById('videoStreams');
+ul.onclick = function(event) {
+	var src = event.target.dataset.src;
+
+	load(src);
+};
+
+var onLoadPressed = function(e){
+	var url = document.getElementById('playUrl').value;
+	load(url);
+}
+
+var btn = document.getElementById('loadBtn');
+btn.addEventListener("click", onLoadPressed);
+
+var listIsShown = true;
+var btn2 = document.getElementById('hideOrShowBtn');
+btn2.addEventListener("click", function () {
+    listIsShown = !listIsShown;
+    if (!listIsShown)
+        document.getElementById('overlay1').setAttribute("hidden", true);
+    else
+        document.getElementById('overlay1').removeAttribute("hidden");
+});
+
+// Set player options
+document.getElementById('optionDebug').addEventListener("change", function (){
+    options.debug = !options.debug;
+    console.log("Debug flag: " + options.debug);
+});
+
+document.getElementById('optionThumbs').addEventListener("change", function (){
+    options.showThumbnails = !options.showThumbnails;
+    console.log("showThumbnails flag: " + options.showThumbnails);
+});
+
+document.getElementById('optionAdMarkers').addEventListener("change", function (){
+    options.showAdBreakMarkers = !options.showAdBreakMarkers;
+    console.log("showAdBreakMarkers flag: " + options.showAdBreakMarkers);
+});
+
+document.getElementById('optionAdSeek').addEventListener("change", function (){
+    options.disableSeekDuringAdBreak = !options.disableSeekDuringAdBreak;
+    console.log("disableSeekDuringAdBreak flag: " + options.disableSeekDuringAdBreak);
+});
+
+document.getElementById('optionNative').addEventListener("change", function (){
+    options.preferNativePlayback = !options.preferNativePlayback;
+    console.log("preferNativePlayback flag: " + options.preferNativePlayback);
+});
+
+document.getElementById('optionLimitRes').addEventListener("change", function (){
+    options.limitResolutionToViewSize = !options.limitResolutionToViewSize;
+    console.log("limitResolutionToViewSize flag: " + options.limitResolutionToViewSize);
+});
+</script>
+
+</body>
+</html>
