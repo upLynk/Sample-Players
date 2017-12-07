@@ -9,6 +9,8 @@ To learn more about FairPlay Streaming, see the FairPlay Streaming Guide documen
 
 ## Requirements
 
+Hardware -- Fairplay playback will not work on emulators
+
 ### Build
 
 iOS 9 SDK, Xcode Version 8 or greater

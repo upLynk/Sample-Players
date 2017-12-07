@@ -103,7 +103,6 @@
 				ORGANIZATIONNAME = "";
 				TargetAttributes = {
 					DBEED9F7164C532D00852DC2 = {
-						DevelopmentTeam = 84CX82JAPN;
 						SystemCapabilities = {
 							com.apple.InterAppAudio = {
 								enabled = 0;
@@ -234,7 +233,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 84CX82JAPN;
+				DEVELOPMENT_TEAM = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS FPS Client-Prefix.pch";
 				GCC_WARN_UNUSED_PARAMETER = NO;
@@ -257,7 +256,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = 84CX82JAPN;
+				DEVELOPMENT_TEAM = "";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "iOS FPS Client-Prefix.pch";
 				GCC_WARN_UNUSED_PARAMETER = NO;
