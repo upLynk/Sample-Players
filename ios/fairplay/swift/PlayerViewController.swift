@@ -12,6 +12,12 @@ import Foundation
 import UIKit
 import AVFoundation
 
+
+// MARK: ADAPT: Your media stream URL.
+/// Playlists are not hardcoded in a real app. Modify this to suit your app design.
+let playlistURL = "https://content.uplynk.com/7b5fcaf81b204808a66b2d855802260c.m3u8?rmt=fps"
+let defaultCertURL = "http://drm.vdms.tv/fairplay/certs/crackle/crackle_public.der"
+
 // MARK: AVAssetResourceLoaderDelegate
 
 class AssetLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
@@ -101,8 +107,7 @@ class AssetLoaderDelegate: NSObject, AVAssetResourceLoaderDelegate {
         */
 
         // If the server provided an application certificate, return it.
-        let defaultURL = "http://wac.bb1c.edgecastcdn.net/00BB1C/fps/datg/fps_disney.cer"
-        let url = URL(string: defaultURL)
+        let url = URL(string: defaultCertURL)
         fetchedCertificate = try? Data(contentsOf: url!)
 
         if let fetchedCertificate = fetchedCertificate {
@@ -293,11 +298,6 @@ class PlayerViewController: UIViewController {
     ]
     
     static let playerItemStatusKey = "player.currentItem.status"
-    
-    // MARK: ADAPT: Your media stream URL.
-
-    /// Playlists are not hardcoded in a real app. Modify this to suit your app design.
-    static let playlistURL = "https://content.uplynk.com/0d24c2ed9818403aa718cb50b458b9ac.m3u8?rmt=fps"
 
     @IBOutlet weak var playerView: PlayerView!
     
@@ -378,7 +378,7 @@ class PlayerViewController: UIViewController {
                 for the asset property will then invoke a method to load and test the necessary asset
                 keys before playback.
             */
-            if let playlistURL = URL(string: PlayerViewController.playlistURL) {
+            if let playlistURL = URL(string: playlistURL) {
                 self.asset = AVURLAsset(url: playlistURL, options: nil)
             }
         }
@@ -412,14 +412,10 @@ class PlayerViewController: UIViewController {
             return
         }
         
-        // AVPlayerItem "status" property value observer.
-        let rawStatus = change?[NSKeyValueChangeKey.newKey] as? Int
-        let newStatus = rawStatus.map(AVPlayerItemStatus.init) ?? .unknown
-        
-        if newStatus == .failed {
+        if playerItem?.status == .failed {
             handleErrorWithMessage(player.currentItem?.error?.localizedDescription, error: player.currentItem?.error as NSError?)
         }
-        else if newStatus == .readyToPlay {
+        else if playerItem?.status == .readyToPlay {
             /* 
                 Once the AVPlayerItem becomes ready to play, i.e.
                 playerItem.status == .ReadyToPlay,
@@ -433,7 +429,7 @@ class PlayerViewController: UIViewController {
     // MARK: - Error Handling
     
     func handleErrorWithMessage(_ message: String?, error: NSError? = nil) {
-        NSLog("Error occured with message: \(message), error: \(error).")
+        NSLog("Error occured with message: \(String(describing: message)), error: \(String(describing: error)).")
         
         let alertTitle = NSLocalizedString("alert.error.title", comment: "Alert title for errors")
         let defaultAlertMessage = NSLocalizedString("error.default.description", comment: "Default error message when no NSError provided")
