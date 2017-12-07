@@ -9,3 +9,4 @@ Contents:
 * ./Roku/simplevideoplayer_uplynk - Very basic Roku channel
 * ./Roku/Simple_Grid_and_Video - A Roku channel showing more features
 * ./Xamarin/Android/ - A Xamarin project in C# for Android
+* ./ios/fairplay - A sample iOS player for FairPlay DRM, both swift and objective C projects are provided.
