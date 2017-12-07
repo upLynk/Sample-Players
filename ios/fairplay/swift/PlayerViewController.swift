@@ -14,9 +14,14 @@ import AVFoundation
 
 
 // MARK: ADAPT: Your media stream URL.
-/// Playlists are not hardcoded in a real app. Modify this to suit your app design.
+// Playlists are not hardcoded in a real app. Modify this to suit your app design.
+// This URL will NOT work with your public certficate, but it left here to show
+// an example of what a fairplay protected uplynk URL will look like.
 let playlistURL = "https://content.uplynk.com/7b5fcaf81b204808a66b2d855802260c.m3u8?rmt=fps"
-let defaultCertURL = "http://drm.vdms.tv/fairplay/certs/crackle/crackle_public.der"
+// MARK: ADAPT: Replace with a URL path to your Apple signed FairPlay Certificate
+// If you are including a cert file in your app you will need to further adapt
+// the code to load your certificate from file instead of from URL.
+let defaultCertURL = "http://example.com/certs/public.der"
 
 // MARK: AVAssetResourceLoaderDelegate
 

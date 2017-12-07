@@ -11,6 +11,13 @@ To learn more about FairPlay Streaming, see the FairPlay Streaming Guide documen
 
 Hardware -- Fairplay playback will not work on emulators
 
+## Code adaptation required
+
+Modify the defaultCertURL and the playListURL near the top of  PlayerViewController.swift to test playback
+of a single asset quickly.
+
+To run on hardware you will need to modify the xcode project to provide a valid signing idenity and application profile.   See the signing section of the profile
+
 ### Build
 
 iOS 9 SDK, Xcode Version 8 or greater

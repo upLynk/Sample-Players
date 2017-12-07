@@ -9,10 +9,15 @@
 
 #import "ViewController.h"
 
-// ADAPT: Provide the public certificate required for your asset
-NSString* const PUBLIC_CERT_PATH = @"http://drm.vdms.tv/fairplay/certs/crackle/crackle_public.der";
-// ADAPT: Your media stream URL
-NSString* const PLAYLIST_URL = @"https://content.uplynk.com/7b5fcaf81b204808a66b2d855802260c.m3u8?rmt=fps"; // Playlists are not hardcoded in a real app. Modify this to suit your app design.
+// MARK: ADAPT: Replace with a URL path to your Apple signed FairPlay Certificate
+// If you are including a cert file in your app you will need to further adapt
+// the code to load your certificate from file instead of from URL.
+NSString* const PUBLIC_CERT_PATH = @"http://example.com/certs/public.der";
+// MARK: ADAPT: Your media stream URL.
+// Playlists are not hardcoded in a real app. Modify this to suit your app design.
+// This URL will NOT work with your public certficate, but it left here to show
+// an example of what a fairplay protected uplynk URL will look like.
+NSString* const PLAYLIST_URL = @"https://content.uplynk.com/7b5fcaf81b204808a66b2d855802260c.m3u8?rmt=fps"; // Playlists 
 
 NSString* const URL_SCHEME_NAME = @"skd";
 
