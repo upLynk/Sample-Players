@@ -1,0 +1,19 @@
+/*
+ Copyright (C) 2015 Apple Inc. All Rights Reserved.
+ See the Apple Developer Program License Agreement for this file's licensing information.
+ All use of these materials is subject to the terms of the Apple Developer Program License Agreement.
+ 
+ Abstract:
+ iOS FPS Client-Prefix.pch: Prefix header for all source files of the 'iOS FPS Client' target in the 'iOS FPS Client' project
+ */
+
+#import <Availability.h>
+
+#ifndef __IPHONE_4_0
+#warning "This project uses features only available in iOS SDK 4.0 and later."
+#endif
+
+#ifdef __OBJC__
+	#import <UIKit/UIKit.h>
+	#import <Foundation/Foundation.h>
+#endif
