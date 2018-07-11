@@ -15,7 +15,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -71,7 +70,7 @@ public class VideoActivity extends AppCompatActivity
     // com.uplynk.media.MediaPlayer provides access the uplynk playback library
     private MediaPlayer mMediaPlayer;
     // MediaController will let us show playback controls on the video surface
-    private MediaController mMediaController;
+//    private MediaController mMediaController;
     // SurfaceView - the view where the video will be rendered
     private SurfaceView mSurfaceView;
     // SurfaceHolder - accessor class for SurfaceView
@@ -119,19 +118,19 @@ public class VideoActivity extends AppCompatActivity
         mMetadataTextView2 = (TextView) this.findViewById(R.id.textView2);
 
         // tap handler to show controls
-        mSurfaceView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                // respond to touch up events on the video surface
-                if (event.getAction() == MotionEvent.ACTION_UP) {
-                    // show the media controller
-                    if (mMediaController != null) {
-                        mMediaController.show();
-                    }
-                }
-                return true;
-            }
-        });
+//        mSurfaceView.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                // respond to touch up events on the video surface
+//                if (event.getAction() == MotionEvent.ACTION_UP) {
+//                    // show the media controller
+//                    if (mMediaController != null) {
+//                        mMediaController.show();
+//                    }
+//                }
+//                return true;
+//            }
+//        });
 
         Button playBtn = (Button) this.findViewById(R.id.playButton);
         playBtn.setOnClickListener(new OnClickListener() {
@@ -370,7 +369,7 @@ public class VideoActivity extends AppCompatActivity
     @Override
     public void onPrepared(MediaPlayer mp) {
         if (mp == mMediaPlayer) {
-            mMediaController.setMediaPlayer(this); // attach media controller (optional)
+//            mMediaController.setMediaPlayer(this); // attach media controller (optional)
             //mMediaPlayer.seekTo(20000); // set starting position in milliseconds if > 0 (optional)
 
             mMediaPlayer.start(); // tell player to start playback
@@ -681,8 +680,8 @@ public class VideoActivity extends AppCompatActivity
         mMediaPlayer.setCaptionStyle(style);
 
         // Attach a MediaController (optional)
-        mMediaController = new MediaController(this);
-        mMediaController.setAnchorView((FrameLayout) mSurfaceView.getParent());
+//        mMediaController = new MediaController(this);
+//        mMediaController.setAnchorView((FrameLayout) mSurfaceView.getParent());
 
         // Set the surface for the video output
         mMediaPlayer.setDisplay(mSurfaceHolder); // must already be created
