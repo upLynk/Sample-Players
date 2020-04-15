@@ -1,9 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
-<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup Condition="'$(NuGetPackageRoot)' == ''">
-    <NuGetPackageRoot>$(UserProfile)\.nuget\packages\</NuGetPackageRoot>
-  </PropertyGroup>
-  <ImportGroup>
-    <Import Project="$(NuGetPackageRoot)\Uplynk.UWP.MediaSource\1.0.16051601\build\Uplynk.UWP.MediaSource.targets" Condition="Exists('$(NuGetPackageRoot)\Uplynk.UWP.MediaSource\1.0.16051601\build\Uplynk.UWP.MediaSource.targets')" />
-  </ImportGroup>
-</Project>
