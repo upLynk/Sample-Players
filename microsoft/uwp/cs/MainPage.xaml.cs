@@ -55,12 +55,6 @@ namespace SamplePlayer
             {
                 case AdaptiveMediaSourceCreationStatus.Success:
                     adaptiveMediaSource = result.MediaSource;
-                    
-                    var bitrate = adaptiveMediaSource.AvailableBitrates.OrderBy(b => b).Last();
-
-                    adaptiveMediaSource.InitialBitrate = bitrate;
-                    adaptiveMediaSource.DesiredMaxBitrate = bitrate;
-                    adaptiveMediaSource.DesiredMinBitrate = bitrate;
 
                     adaptiveMediaSource.Diagnostics.DiagnosticAvailable += DiagnosticAvailable;
                     adaptiveMediaSource.DownloadRequested += DownloadRequested;
@@ -90,6 +84,10 @@ namespace SamplePlayer
             catch (Exception x) when (((uint)x.HResult == MSPR_E_CONTENT_ENABLING_ACTION_REQUIRED))
             {
                 individualizationRequest.NextServiceRequest();
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
             }
         }
 
@@ -145,7 +143,19 @@ namespace SamplePlayer
                 }
                 else if (e.Request is PlayReadyLicenseAcquisitionServiceRequest licenseRequest)
                 {
-                    await licenseRequest.BeginServiceRequest();
+                    var uri = licenseRequest.Uri;
+
+                    try
+                    {
+                        await licenseRequest.BeginServiceRequest();
+                    }
+                    catch (Exception)
+                    {
+                        if (uri != null)
+                        {
+                            throw;
+                        }
+                    }
                 }
 
                 e.Completion.Complete(true);
