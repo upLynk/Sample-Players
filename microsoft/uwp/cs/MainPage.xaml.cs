@@ -10,6 +10,7 @@ using Windows.Media.Playback;
 using Windows.Media.Protection;
 using Windows.Media.Protection.PlayReady;
 using Windows.Media.Streaming.Adaptive;
+using Windows.Storage.Streams;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 using Windows.Web.Http;
@@ -21,6 +22,7 @@ namespace SamplePlayer
         private const uint MSPR_E_CONTENT_ENABLING_ACTION_REQUIRED = 0x8004B895;
 
         private readonly HashSet<string> requestedPlayReadyHeaders = new HashSet<string>();
+        private readonly List<PlayReadyContentHeader> parsedPlayReadyHeaders = new List<PlayReadyContentHeader>();
 
         private AdaptiveMediaSource adaptiveMediaSource;
         private MediaPlayer mediaPlayer;
@@ -46,11 +48,12 @@ namespace SamplePlayer
 
             MediaPlayerElement.SetMediaPlayer(mediaPlayer);
 
-            await ProActiveIndividualizationRequestAsync();
-
             var url = "<STREAM_URL>";
+            var uri = new Uri(url);
 
-            var result = await AdaptiveMediaSource.CreateFromUriAsync(new Uri(url));
+            (IInputStream inputStream, string contentType) = await ParseMasterPlaylist(uri);
+
+            var result = await AdaptiveMediaSource.CreateFromStreamAsync(inputStream, uri, contentType);
             switch (result.Status)
             {
                 case AdaptiveMediaSourceCreationStatus.Success:
@@ -67,6 +70,32 @@ namespace SamplePlayer
                 default:
                     Debug.WriteLine(result.ExtendedError);
                     break;
+            }
+        }
+
+        private async Task<(IInputStream, string)> ParseMasterPlaylist(Uri uri)
+        {
+            var client = new HttpClient();
+            using (var request = new HttpRequestMessage(HttpMethod.Get, uri))
+            using (var response = await client.SendRequestAsync(request))
+            {
+                string contentType = response.Content.Headers.ContentType.MediaType;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var contents = await response.Content.ReadAsStringAsync();
+                    var headers = ParseHlsManifestForPlayReadyData(contents);
+
+                    foreach (var header in headers)
+                    {
+                        byte[] data = Convert.FromBase64String(header);
+                        var contentHeader = new PlayReadyContentHeader(data);
+                        parsedPlayReadyHeaders.Add(contentHeader);                        
+                    }
+                }
+
+                var inputStream = await response.Content.ReadAsInputStreamAsync();
+                return (inputStream, contentType);
             }
         }
 
@@ -143,21 +172,30 @@ namespace SamplePlayer
                 }
                 else if (e.Request is PlayReadyLicenseAcquisitionServiceRequest licenseRequest)
                 {
-                    var uri = licenseRequest.Uri;
+                    if (licenseRequest.Uri == null)
+                    {
+                        // License Uri is null so try to find a previously parsed PlayReadyContentHeader
+                        // that has the same KeyIds as this licese request
 
-                    try
+                        var keyIdsSet = new HashSet<string>(licenseRequest.ContentHeader.KeyIdStrings);
+                        foreach (PlayReadyContentHeader contentHeader in parsedPlayReadyHeaders)
+                        {
+                            var headerKeySet = new HashSet<string>(contentHeader.KeyIdStrings);
+                            if (keyIdsSet.SetEquals(headerKeySet))
+                            {
+                                var request = licenseSession.CreateLAServiceRequest();
+                                request.ContentHeader = contentHeader;
+                                await request.BeginServiceRequest();
+                                break;
+                            }
+                        }
+                    }
+                    else
                     {
                         await licenseRequest.BeginServiceRequest();
                     }
-                    catch (Exception)
-                    {
-                        if (uri != null)
-                        {
-                            throw;
-                        }
-                    }
                 }
-
+                
                 e.Completion.Complete(true);
             }
             catch
