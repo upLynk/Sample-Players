@@ -52,7 +52,6 @@ namespace SamplePlayer
             var uri = new Uri(url);
 
             (IInputStream inputStream, string contentType) = await ParseMasterPlaylist(uri);
-
             var result = await AdaptiveMediaSource.CreateFromStreamAsync(inputStream, uri, contentType);
             switch (result.Status)
             {
@@ -61,6 +60,12 @@ namespace SamplePlayer
 
                     adaptiveMediaSource.Diagnostics.DiagnosticAvailable += DiagnosticAvailable;
                     adaptiveMediaSource.DownloadRequested += DownloadRequested;
+
+                    adaptiveMediaSource.InitialBitrate = adaptiveMediaSource.AvailableBitrates.ElementAt(adaptiveMediaSource.AvailableBitrates.Count() / 2);
+                    Debug.WriteLine($"Initial Bitrate: {adaptiveMediaSource.InitialBitrate}");
+
+                    adaptiveMediaSource.PlaybackBitrateChanged += AdaptiveMediaSource_PlaybackBitrateChanged;
+                    adaptiveMediaSource.DownloadBitrateChanged += AdaptiveMediaSource_DownloadBitrateChanged;
 
                     var mediaSource = MediaSource.CreateFromAdaptiveMediaSource(adaptiveMediaSource);
                     var mediaPlaybackItem = new MediaPlaybackItem(mediaSource);
@@ -71,6 +76,16 @@ namespace SamplePlayer
                     Debug.WriteLine(result.ExtendedError);
                     break;
             }
+        }
+
+        private void AdaptiveMediaSource_DownloadBitrateChanged(AdaptiveMediaSource sender, AdaptiveMediaSourceDownloadBitrateChangedEventArgs args)
+        {
+            Debug.WriteLine($"Download Bitrate Changed: {args.OldValue} -> {args.NewValue}");
+        }
+
+        private void AdaptiveMediaSource_PlaybackBitrateChanged(AdaptiveMediaSource sender, AdaptiveMediaSourcePlaybackBitrateChangedEventArgs args)
+        {
+            Debug.WriteLine($"Playback Bitrate Changed: {args.OldValue} -> {args.NewValue}");
         }
 
         private async Task<(IInputStream, string)> ParseMasterPlaylist(Uri uri)
@@ -90,7 +105,11 @@ namespace SamplePlayer
                     {
                         byte[] data = Convert.FromBase64String(header);
                         var contentHeader = new PlayReadyContentHeader(data);
-                        parsedPlayReadyHeaders.Add(contentHeader);                        
+                        parsedPlayReadyHeaders.Add(contentHeader);
+
+                        var licenseRequest = licenseSession.CreateLAServiceRequest();
+                        licenseRequest.ContentHeader = contentHeader;
+                        await licenseRequest.BeginServiceRequest();
                     }
                 }
 
