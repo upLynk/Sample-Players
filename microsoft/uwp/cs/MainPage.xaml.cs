@@ -48,6 +48,8 @@ namespace SamplePlayer
 
             MediaPlayerElement.SetMediaPlayer(mediaPlayer);
 
+            await ProActiveIndividualizationRequestAsync();
+
             var url = "<STREAM_URL>";
             var uri = new Uri(url);
 
